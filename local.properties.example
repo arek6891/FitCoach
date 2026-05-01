@@ -1,0 +1,14 @@
+# Skopiuj ten plik do local.properties i uzupełnij wartości
+# NIE commituj local.properties do gita
+
+sdk.dir=/home/TWOJ_USER/Android/Sdk
+
+# Supabase — znajdziesz w Supabase Dashboard > Settings > API
+SUPABASE_URL=https://TWOJ_PROJEKT.supabase.co
+SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+# Stripe — znajdziesz w Stripe Dashboard > Developers > API Keys
+STRIPE_PUBLISHABLE_KEY=pk_test_...
+
+# Firebase — plik google-services.json pobierz z Firebase Console
+# i umieść w app/google-services.json (nie commituj)

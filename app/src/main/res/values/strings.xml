@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FitCoach</string>
+
+    <!-- Auth -->
+    <string name="login_title">Zaloguj się</string>
+    <string name="login_subtitle">Zaloguj się do swojego konta</string>
+    <string name="email_label">Email</string>
+    <string name="password_label">Hasło</string>
+    <string name="login_button">Zaloguj się</string>
+    <string name="register_link">Nie masz konta? Zarejestruj się</string>
+    <string name="forgot_password">Zapomniałeś hasła?</string>
+
+    <!-- Register -->
+    <string name="register_title">Zarejestruj się</string>
+    <string name="register_as_trainer">Jestem trenerem</string>
+    <string name="register_as_client">Jestem klientem</string>
+    <string name="invite_code_label">Kod zaproszenia od trenera</string>
+    <string name="first_name_label">Imię</string>
+    <string name="last_name_label">Nazwisko</string>
+    <string name="register_button">Zarejestruj się</string>
+    <string name="have_account">Masz już konto? Zaloguj się</string>
+
+    <!-- Dashboard Trener -->
+    <string name="trainer_dashboard_title">FitCoach — Trener</string>
+    <string name="my_clients">Moi klienci</string>
+    <string name="add_client">Dodaj klienta</string>
+    <string name="no_clients_title">Nie masz jeszcze klientów</string>
+    <string name="no_clients_subtitle">Dodaj pierwszego klienta i wyślij mu kod zaproszenia</string>
+    <string name="active_today">Aktywni dziś</string>
+
+    <!-- Dashboard Klient -->
+    <string name="client_dashboard_title">FitCoach</string>
+    <string name="todays_training">Dzisiejszy trening</string>
+    <string name="todays_habits">Nawyki na dziś</string>
+    <string name="no_plan_title">Brak przypisanego planu</string>
+    <string name="no_plan_subtitle">Twój trener przypisze Ci plan treningowy</string>
+
+    <!-- Training -->
+    <string name="start_workout">Zacznij trening</string>
+    <string name="finish_workout">Zakończ trening</string>
+    <string name="rest_timer">Przerwa</string>
+    <string name="sets">Serie</string>
+    <string name="reps">Powt.</string>
+    <string name="weight_kg">Kg</string>
+    <string name="save_set">Zapisz serię</string>
+
+    <!-- Habits -->
+    <string name="habits_title">Nawyki</string>
+    <string name="habit_completed">Wykonane</string>
+    <string name="streak_days">dni z rzędu</string>
+
+    <!-- Nutrition -->
+    <string name="food_log_title">Dziennik żywienia</string>
+    <string name="breakfast">Śniadanie</string>
+    <string name="lunch">Obiad</string>
+    <string name="dinner">Kolacja</string>
+    <string name="snack">Przekąska</string>
+    <string name="add_food">Dodaj produkt</string>
+    <string name="scan_barcode">Skanuj kod</string>
+    <string name="calories">kcal</string>
+    <string name="protein">Białko</string>
+    <string name="carbs">Węgle</string>
+    <string name="fat">Tłuszcz</string>
+
+    <!-- Progress -->
+    <string name="progress_title">Postęp</string>
+    <string name="add_measurement">Dodaj pomiar</string>
+    <string name="weight">Waga</string>
+    <string name="add_photo">Dodaj zdjęcie</string>
+
+    <!-- Errors -->
+    <string name="error_network">Brak połączenia z internetem</string>
+    <string name="error_generic">Wystąpił błąd. Spróbuj ponownie</string>
+    <string name="error_invalid_credentials">Nieprawidłowy email lub hasło</string>
+    <string name="error_email_required">Email jest wymagany</string>
+    <string name="error_invalid_email">Nieprawidłowy format email</string>
+    <string name="error_password_too_short">Hasło musi mieć minimum 6 znaków</string>
+
+    <!-- Common -->
+    <string name="loading">Ładowanie…</string>
+    <string name="retry">Spróbuj ponownie</string>
+    <string name="cancel">Anuluj</string>
+    <string name="save">Zapisz</string>
+    <string name="delete">Usuń</string>
+    <string name="edit">Edytuj</string>
+    <string name="back">Wróć</string>
+    <string name="logout">Wyloguj</string>
+    <string name="settings">Ustawienia</string>
+</resources>

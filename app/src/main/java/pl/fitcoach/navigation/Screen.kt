@@ -1,0 +1,29 @@
+package pl.fitcoach.navigation
+
+sealed class Screen(val route: String) {
+    data object Splash : Screen("splash")
+    data object Login : Screen("login")
+    data object Register : Screen("register")
+
+    // Trainer
+    data object TrainerDashboard : Screen("trainer/dashboard")
+    data object ClientDetail : Screen("trainer/client/{clientId}") {
+        fun createRoute(clientId: String) = "trainer/client/$clientId"
+    }
+    data object CreatePlan : Screen("trainer/plan/create/{clientId}") {
+        fun createRoute(clientId: String) = "trainer/plan/create/$clientId"
+    }
+
+    // Client
+    data object ClientDashboard : Screen("client/dashboard")
+    data object ActiveWorkout : Screen("client/workout/{sessionId}") {
+        fun createRoute(sessionId: String) = "client/workout/$sessionId"
+    }
+    data object FoodLog : Screen("client/food")
+    data object Progress : Screen("client/progress")
+    data object Habits : Screen("client/habits")
+
+    // Shared
+    data object Settings : Screen("settings")
+    data object Subscription : Screen("settings/subscription")
+}
