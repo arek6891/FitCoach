@@ -13,6 +13,7 @@
 
     <!-- Register -->
     <string name="register_title">Zarejestruj się</string>
+    <string name="register_subtitle">Utwórz nowe konto</string>
     <string name="register_as_trainer">Jestem trenerem</string>
     <string name="register_as_client">Jestem klientem</string>
     <string name="invite_code_label">Kod zaproszenia od trenera</string>
@@ -20,6 +21,13 @@
     <string name="last_name_label">Nazwisko</string>
     <string name="register_button">Zarejestruj się</string>
     <string name="have_account">Masz już konto? Zaloguj się</string>
+    <string name="confirm_password_label">Powtórz hasło</string>
+    <string name="role_section_label">Wybierz swoją rolę</string>
+    <string name="show_password">Pokaż hasło</string>
+    <string name="hide_password">Ukryj hasło</string>
+    <string name="error_passwords_not_match">Hasła nie są zgodne</string>
+    <string name="error_email_taken">Podany adres email jest już zajęty</string>
+    <string name="error_invite_code_required">Kod zaproszenia jest wymagany</string>
 
     <!-- Dashboard Trener -->
     <string name="trainer_dashboard_title">FitCoach — Trener</string>
@@ -28,6 +36,8 @@
     <string name="no_clients_title">Nie masz jeszcze klientów</string>
     <string name="no_clients_subtitle">Dodaj pierwszego klienta i wyślij mu kod zaproszenia</string>
     <string name="active_today">Aktywni dziś</string>
+    <string name="client_active">Aktywny</string>
+    <string name="client_inactive">Nieaktywny</string>
 
     <!-- Dashboard Klient -->
     <string name="client_dashboard_title">FitCoach</string>
@@ -35,6 +45,14 @@
     <string name="todays_habits">Nawyki na dziś</string>
     <string name="no_plan_title">Brak przypisanego planu</string>
     <string name="no_plan_subtitle">Twój trener przypisze Ci plan treningowy</string>
+    <string name="rest_day_title">Dziś odpoczywasz 💪</string>
+    <string name="rest_day_subtitle">Brak treningu zaplanowanego na dziś</string>
+    <string name="hello_client">Cześć, %1$s!</string>
+    <string name="habits_progress">%1$d / %2$d wykonanych</string>
+    <string name="exercise_sets_reps">%1$d × %2$d</string>
+    <string name="exercise_sets_only">%1$d serii</string>
+    <string name="exercise_weight_kg">%1$.1f kg</string>
+    <string name="quantity_habit_value_label">Wartość</string>
 
     <!-- Training -->
     <string name="start_workout">Zacznij trening</string>

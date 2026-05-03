@@ -1,3 +1,7 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 # FitCoach — Platforma dla Trenerów Personalnych
 
 Dwustronna aplikacja Android: panel trenera + aplikacja klienta. Backend na Supabase.
@@ -8,9 +12,9 @@ Trener zarządza klientami, planami i nawykami. Klient loguje treningi, jedzenie
 ### Android
 - **Kotlin 2.x** + Jetpack Compose (Material3)
 - **Architektura:** Clean Architecture + MVVM
-- **DI:** Hilt
+- **DI:** Hilt (z KSP — nie KAPT)
 - **Nawigacja:** Compose Navigation 2.x
-- **Sieć:** Supabase Kotlin SDK + Retrofit (Open Food Facts)
+- **Sieć:** Supabase Kotlin SDK (`supabase-kt 3.x`) + Retrofit (Open Food Facts)
 - **Cache:** Room (offline-first dla treningów)
 - **Obrazy:** Coil 2.x
 - **Skanowanie:** ML Kit Barcode Scanner
@@ -21,84 +25,39 @@ Trener zarządza klientami, planami i nawykami. Klient loguje treningi, jedzenie
 - **Supabase** — PostgreSQL + Auth + Realtime + Storage + Edge Functions
 - **Edge Functions:** TypeScript/Deno (webhooki Stripe, logika biznesowa)
 - **Płatności:** Stripe
-- **Baza żywności:** Open Food Facts API (bezpłatne, pokrywa PL)
+- **Baza żywności:** Open Food Facts API (`https://world.openfoodfacts.org/`)
 
-## Struktura pakietów Android
+## Stan projektu
 
-```
-app/src/main/java/pl/fitcoach/
-├── FitCoachApp.kt          # Application, Hilt
-├── MainActivity.kt         # Single activity
-├── di/AppModule.kt         # Hilt moduły
-├── core/
-│   ├── data/               # Implementacje repozytoriów, DTO, Room, Supabase
-│   ├── domain/             # Encje, use cases, interfejsy repozytoriów
-│   └── ui/                 # Wspólne komponenty, temat, nawigacja
-└── features/
-    ├── auth/               # Logowanie, rejestracja, wybór roli
-    ├── dashboard/          # Ekran główny (różny dla roli)
-    ├── clients/            # Zarządzanie klientami (tylko trener)
-    ├── training/           # Plany treningowe i sesje
-    ├── nutrition/          # Dziennik żywienia + baza produktów
-    ├── habits/             # Nawyki (ustawiane przez trenera)
-    ├── progress/           # Pomiary, zdjęcia, wykresy
-    ├── messages/           # Czat trener-klient
-    └── settings/           # Ustawienia, subskrypcja Stripe
-```
+Faza 0 + początek Fazy 1 ukończone. Projekt jest **single-module** (`app/`). Podział na `core-data/core-domain/feature-*` to plan na przyszłość, nie aktualny stan.
 
-## Konwencje kodu
+### Zaimplementowane features
 
-- Pakiety: `pl.fitcoach.features.<feature>.<layer>` (layer = data/domain/ui)
-- ViewModele: `<Feature>ViewModel`, stan: `<Feature>UiState` (sealed class lub data class)
-- Use Cases: `<Czasownik><Rzeczownik>UseCase` np. `GetClientsUseCase`, `LogWorkoutUseCase`
-- Repozytoria: interfejs w `domain`, implementacja w `data`
-- Wyniki: `Result<T>` w use cases, mapowane na UI state w ViewModelu
-- Strings: polskie w `strings.xml`, angielskie w `strings-en/strings.xml`
-- Kolory/typografia: tylko przez `MaterialTheme`, nie hardcodować
+| Feature | Stan | Opis |
+|---------|------|------|
+| Auth — login | ✅ | `LoginScreen` + `LoginViewModel` + `LoginUseCase` |
+| Auth — rejestracja | ✅ | `RegisterScreen` + `RegisterViewModel` + `RegisterUseCase`; wybór roli trener/klient; pole invite code (zebrane, logika TODO) |
+| Dashboard trenera | ✅ | Lista klientów z Supabase, statystyka aktywnych, avatar placeholder, logout |
+| Dashboard klienta | ✅ | Profil klienta, dzisiejszy trening z planu (3 stany: brak planu / dzień wolny / trening), nawyki z checkboxem i polem ilościowym (debounce 600ms), optimistic updates |
+| Splash | ✅ | Sprawdza auth state, przekierowuje do właściwego dashboardu |
 
-## Role użytkowników
+### Następne do zrobienia (Faza 1)
 
-| Rola | Dostęp |
-|------|--------|
-| `trainer` | Widzi wszystkich swoich klientów, tworzy plany, ustawia nawyki |
-| `client` | Widzi tylko swoje dane, loguje aktywność |
-
-Rola przechowywana w `user_metadata` Supabase Auth. Po zalogowaniu app przekierowuje do odpowiedniego dashboardu.
-
-## Zmienne środowiskowe
-
-Plik `local.properties` (nie commitować):
-```
-SUPABASE_URL=https://xxx.supabase.co
-SUPABASE_ANON_KEY=eyJ...
-STRIPE_PUBLISHABLE_KEY=pk_live_...
-```
-
-Plik `google-services.json` w `app/` (nie commitować).
-
-## Supabase
-
-- Projekt: `fitcoach-prod` (produkcja), `fitcoach-dev` (development)
-- Auth: email + hasło + Google OAuth
-- Storage buckety: `avatars` (publiczny), `progress-photos` (prywatny per klient)
-- Realtime włączony na: `workout_sessions`, `habit_logs`, `messages`
-- RLS: główna warstwa bezpieczeństwa — trener widzi tylko swoich klientów
-
-## Kluczowe decyzje architektoniczne
-
-1. **Jeden APK, dwie role** — rola po zalogowaniu determinuje widok
-2. **Offline-first dla treningów** — Room jako cache, sync gdy internet wraca
-3. **RLS w Supabase** — nie sprawdzamy ról w aplikacji, baza danych egzekwuje uprawnienia
-4. **BLIK przez Stripe** — nie integrujemy BLIK bezpośrednio
-5. **Open Food Facts** — główna baza produktów (free), custom produkty w Supabase
-6. **Paddle/Lemon Squeezy jako MoR** — rozważyć zamiast Stripe jeśli sprzedaż międzynarodowa (obsługuje VAT UE)
+- Zarządzanie klientami: dodawanie klienta, generowanie invite code, ekran szczegółów
+- Plany treningowe: kreator planu, baza ćwiczeń, przypisanie do klienta
+- Aktywna sesja treningowa (ekran `ActiveWorkout`)
+- Nawyki: ekran zarządzania po stronie trenera
+- Offline sync (WorkManager)
 
 ## Komendy
 
 ```bash
-# Android build
+# Android build i testy
 ./gradlew assembleDebug
-./gradlew test
+./gradlew assembleRelease
+./gradlew test                              # wszystkie unit testy
+./gradlew testDebugUnitTest --tests "pl.fitcoach.features.auth.*"  # testy konkretnego pakietu
+./gradlew connectedAndroidTest              # testy instrumentowane (wymaga urządzenia)
 ./gradlew lint
 
 # Supabase (wymaga supabase CLI)
@@ -111,10 +70,96 @@ supabase gen types typescript     # generuj typy z schematu DB
 stripe listen --forward-to localhost:54321/functions/v1/stripe-webhook
 ```
 
+## Zmienne środowiskowe
+
+Plik `local.properties` (nie commitować):
+```
+SUPABASE_URL=https://xxx.supabase.co
+SUPABASE_ANON_KEY=eyJ...
+STRIPE_PUBLISHABLE_KEY=pk_live_...
+```
+
+Zmienne są wstrzykiwane do `BuildConfig` w `build.gradle.kts` i dostępne przez `BuildConfig.SUPABASE_URL` itp. Debug build ma sufiks `applicationId = pl.fitcoach.debug`.
+
+Plik `google-services.json` w `app/` (nie commitować).
+
+## Struktura pakietów Android
+
+```
+app/src/main/java/pl/fitcoach/
+├── FitCoachApp.kt          # Application, Hilt
+├── MainActivity.kt         # Single activity
+├── navigation/
+│   ├── NavGraph.kt         # NavHost — aktualnie: Splash, Login, TrainerDashboard, ClientDashboard
+│   └── Screen.kt           # Sealed class z routami
+├── di/AppModule.kt         # Hilt: AppModule (provides) + RepositoryModule (binds) w jednym pliku
+├── core/
+│   ├── data/db/            # FitCoachDatabase (Room), aktualnie tylko UserCacheDao
+│   ├── service/            # FitCoachMessagingService (FCM)
+│   └── ui/theme/           # Color.kt, Theme.kt, Type.kt
+└── features/
+    ├── auth/               # Login + rejestracja z wyborem roli
+    │   ├── data/           # AuthRepositoryImpl (Supabase), UserCacheEntity (Room)
+    │   ├── domain/         # AuthRepository, LoginUseCase, RegisterUseCase, AuthState, UserRole
+    │   └── ui/             # LoginScreen, LoginViewModel, RegisterScreen, RegisterViewModel
+    ├── splash/             # SplashScreen + SplashViewModel — sprawdza auth, przekierowuje
+    ├── clients/            # Dane klientów (używane przez dashboard trenera)
+    │   ├── data/           # ClientRepositoryImpl, ClientDto, TrainerProfileDto
+    │   └── domain/         # ClientRepository, Client, TrainerProfile, GetClientsUseCase, GetTrainerProfileUseCase
+    ├── dashboard/          # Dashboardy obu ról
+    │   ├── data/           # ClientDashboardRepositoryImpl, DTO (plan + nawyki)
+    │   ├── domain/         # ClientDashboardRepository, ClientProfile, GetClientDashboardUseCase, LogHabitUseCase
+    │   └── ui/             # TrainerDashboardScreen+VM, ClientDashboardScreen+VM
+    ├── training/           # Modele domenowe: Exercise, TrainingPlan, TrainingDay, TrainingDayExercise
+    ├── habits/             # Model domenowy: Habit, HabitType
+    ├── nutrition/          # (planowane)
+    ├── progress/           # (planowane)
+    ├── messages/           # (planowane)
+    └── settings/           # (planowane)
+```
+
+## Konwencje kodu
+
+- Pakiety: `pl.fitcoach.features.<feature>.<layer>` (layer = data/domain/ui)
+- ViewModele: `<Feature>ViewModel`, stan: `<Feature>UiState` (sealed class lub data class)
+- Use Cases: `<Czasownik><Rzeczownik>UseCase` np. `GetClientsUseCase`, `LogWorkoutUseCase`
+- Repozytoria: interfejs w `domain`, implementacja w `data`; binding w `RepositoryModule` w `AppModule.kt`
+- Wyniki: `Result<T>` w use cases (przez `runCatching`), mapowane na UI state w ViewModelu
+- Strings: polskie w `strings.xml`, angielskie w `strings-en/strings.xml`
+- Kolory/typografia: tylko przez `MaterialTheme`, nie hardcodować
+- Zależności: wersje w `gradle/libs.versions.toml` (Version Catalog)
+
+## Role użytkowników
+
+| Rola | Dostęp |
+|------|--------|
+| `trainer` | Widzi wszystkich swoich klientów, tworzy plany, ustawia nawyki |
+| `client` | Widzi tylko swoje dane, loguje aktywność |
+
+Rola przechowywana w `user_metadata` Supabase Auth jako `{ "role": "trainer" | "client" }`. Odczytywana w `AuthRepositoryImpl.getCurrentUser()`. Po zalogowaniu `SplashViewModel` przekierowuje do odpowiedniego dashboardu.
+
+## Supabase
+
+- Projekt: `fitcoach-prod` (produkcja), `fitcoach-dev` (development)
+- Auth: email + hasło + Google OAuth (OAuth planowane w Fazie 3)
+- Storage buckety: `avatars` (publiczny), `progress-photos` (prywatny per klient)
+- Realtime włączony na: `workout_sessions`, `habit_logs`, `messages`
+- RLS: główna warstwa bezpieczeństwa — trener widzi tylko swoich klientów
+- Pełny schemat DB i polityki RLS: `docs/database-schema.md`
+- Struktura Edge Functions: `docs/architecture.md`
+
+## Kluczowe decyzje architektoniczne
+
+1. **Jeden APK, dwie role** — rola po zalogowaniu determinuje widok
+2. **Offline-first dla treningów** — Room jako cache, sync gdy internet wraca; `fallbackToDestructiveMigration()` włączone w trakcie dev (zmienić przed launch)
+3. **RLS w Supabase** — nie sprawdzamy ról w aplikacji, baza danych egzekwuje uprawnienia
+4. **BLIK przez Stripe** — nie integrujemy BLIK bezpośrednio
+5. **Open Food Facts** — główna baza produktów (free), custom produkty w Supabase
+6. **Paddle/Lemon Squeezy jako MoR** — rozważyć zamiast Stripe jeśli sprzedaż międzynarodowa (obsługuje VAT UE)
+
 ## Ważne zasoby
 
 - Supabase Kotlin SDK: https://github.com/supabase-community/supabase-kt
 - Material3 komponenty: https://m3.material.io/components
 - Open Food Facts API: https://openfoodfacts.github.io/openfoodfacts-server/api/
 - Stripe Android: https://stripe.com/docs/payments/accept-a-payment?platform=android
-- PolishAPI (open banking, na przyszłość): https://polishapi.org

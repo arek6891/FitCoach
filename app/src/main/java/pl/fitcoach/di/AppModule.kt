@@ -21,6 +21,10 @@ import pl.fitcoach.BuildConfig
 import pl.fitcoach.core.data.db.FitCoachDatabase
 import pl.fitcoach.features.auth.data.AuthRepositoryImpl
 import pl.fitcoach.features.auth.domain.repository.AuthRepository
+import pl.fitcoach.features.clients.data.ClientRepositoryImpl
+import pl.fitcoach.features.clients.domain.repository.ClientRepository
+import pl.fitcoach.features.dashboard.data.ClientDashboardRepositoryImpl
+import pl.fitcoach.features.dashboard.domain.repository.ClientDashboardRepository
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
@@ -73,4 +77,12 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindAuthRepository(impl: AuthRepositoryImpl): AuthRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindClientRepository(impl: ClientRepositoryImpl): ClientRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindClientDashboardRepository(impl: ClientDashboardRepositoryImpl): ClientDashboardRepository
 }
