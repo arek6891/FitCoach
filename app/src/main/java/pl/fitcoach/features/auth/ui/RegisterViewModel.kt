@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import pl.fitcoach.features.auth.domain.model.UserRole
+import pl.fitcoach.features.auth.domain.repository.AuthRepository
 import pl.fitcoach.features.auth.domain.usecase.RegisterUseCase
 import javax.inject.Inject
 
@@ -22,6 +23,7 @@ data class RegisterUiState(
     val isPasswordVisible: Boolean = false,
     val isConfirmPasswordVisible: Boolean = false,
     val error: String? = null,
+    val inviteCodeWarning: String? = null,
     val registeredRole: UserRole? = null
 )
 
@@ -35,11 +37,13 @@ sealed class RegisterEvent {
     data object ToggleConfirmPasswordVisibility : RegisterEvent()
     data object RegisterClicked : RegisterEvent()
     data object ErrorDismissed : RegisterEvent()
+    data object InviteCodeWarningDismissed : RegisterEvent()
 }
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
-    private val registerUseCase: RegisterUseCase
+    private val registerUseCase: RegisterUseCase,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RegisterUiState())
@@ -72,13 +76,16 @@ class RegisterViewModel @Inject constructor(
 
             is RegisterEvent.ErrorDismissed ->
                 _uiState.update { it.copy(error = null) }
+
+            is RegisterEvent.InviteCodeWarningDismissed ->
+                _uiState.update { it.copy(inviteCodeWarning = null) }
         }
     }
 
     private fun register() {
         val state = _uiState.value
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null) }
+            _uiState.update { it.copy(isLoading = true, error = null, inviteCodeWarning = null) }
             registerUseCase(
                 email = state.email,
                 password = state.password,
@@ -86,7 +93,17 @@ class RegisterViewModel @Inject constructor(
                 role = state.selectedRole.name.lowercase()
             )
                 .onSuccess { user ->
-                    _uiState.update { it.copy(isLoading = false, registeredRole = user.role) }
+                    val warning = tryRedeemInviteCode(
+                        role = user.role,
+                        inviteCode = state.inviteCode
+                    )
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            inviteCodeWarning = warning,
+                            registeredRole = user.role
+                        )
+                    }
                 }
                 .onFailure { error ->
                     _uiState.update {
@@ -97,6 +114,19 @@ class RegisterViewModel @Inject constructor(
                     }
                 }
         }
+    }
+
+    private suspend fun tryRedeemInviteCode(
+        role: UserRole,
+        inviteCode: String
+    ): String? {
+        if (role != UserRole.CLIENT) return null
+        if (inviteCode.isBlank()) return null
+        return authRepository.redeemInviteCode(inviteCode.trim())
+            .fold(
+                onSuccess = { null },
+                onFailure = { "Nie udało się powiązać z trenerem. Skontaktuj się z trenerem." }
+            )
     }
 
     private fun mapError(error: Throwable): String = when {

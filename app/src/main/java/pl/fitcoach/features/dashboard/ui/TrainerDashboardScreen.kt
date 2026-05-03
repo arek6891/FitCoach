@@ -19,6 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.outlined.CardGiftcard
 import androidx.compose.material.icons.outlined.GroupOff
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -76,7 +77,11 @@ fun TrainerDashboardScreen(
 
     TrainerDashboardContent(
         uiState = uiState,
-        onEvent = viewModel::onEvent
+        onEvent = viewModel::onEvent,
+        onNavigateToInviteCodes = { navController.navigate(Screen.InviteCodes.route) },
+        onNavigateToClientDetail = { clientId ->
+            navController.navigate(Screen.ClientDetail.createRoute(clientId))
+        }
     )
 }
 
@@ -84,7 +89,9 @@ fun TrainerDashboardScreen(
 @Composable
 private fun TrainerDashboardContent(
     uiState: TrainerDashboardUiState,
-    onEvent: (TrainerDashboardEvent) -> Unit
+    onEvent: (TrainerDashboardEvent) -> Unit,
+    onNavigateToInviteCodes: () -> Unit = {},
+    onNavigateToClientDetail: (String) -> Unit = {}
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -164,6 +171,17 @@ private fun TrainerDashboardContent(
                         }
 
                         item {
+                            InviteCodesShortcutCard(
+                                onClick = onNavigateToInviteCodes,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp)
+                            )
+                        }
+
+                        item { Spacer(modifier = Modifier.height(4.dp)) }
+
+                        item {
                             Text(
                                 text = stringResource(R.string.my_clients),
                                 style = MaterialTheme.typography.titleMedium,
@@ -186,6 +204,7 @@ private fun TrainerDashboardContent(
                             ) { client ->
                                 ClientListItem(
                                     client = client,
+                                    onClick = { onNavigateToClientDetail(client.userId) },
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(horizontal = 16.dp)
@@ -243,9 +262,11 @@ private fun ActiveClientsCard(
 @Composable
 private fun ClientListItem(
     client: Client,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
+        onClick = onClick,
         modifier = modifier,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
@@ -327,6 +348,48 @@ private fun ClientAvatar(
                 tint = MaterialTheme.colorScheme.onPrimaryContainer,
                 modifier = Modifier.size(28.dp)
             )
+        }
+    }
+}
+
+@Composable
+private fun InviteCodesShortcutCard(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        onClick = onClick,
+        modifier = modifier,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.CardGiftcard,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onTertiaryContainer,
+                modifier = Modifier.size(28.dp)
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(R.string.invite_codes_title),
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onTertiaryContainer
+                )
+                Text(
+                    text = stringResource(R.string.invite_codes_shortcut_subtitle),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onTertiaryContainer
+                )
+            }
         }
     }
 }
@@ -429,6 +492,7 @@ private fun TrainerDashboardWithClientsPreview() {
                         inviteCode = null,
                         createdAt = "2025-03-10"
                     )
+
                 )
             ),
             onEvent = {}

@@ -95,6 +95,34 @@
     <string name="error_invalid_email">Nieprawidłowy format email</string>
     <string name="error_password_too_short">Hasło musi mieć minimum 6 znaków</string>
 
+    <!-- Invite Codes -->
+    <string name="invite_codes_title">Kody zaproszenia</string>
+    <string name="invite_codes_shortcut_subtitle">Generuj i zarządzaj kodami dla klientów</string>
+    <string name="invite_codes_empty_title">Brak kodów zaproszenia</string>
+    <string name="invite_codes_empty_subtitle">Wygeneruj kod i prześlij go klientowi, aby mógł dołączyć do aplikacji</string>
+    <string name="invite_code_generate">Wygeneruj kod</string>
+    <string name="invite_code_generate_dialog_title">Nowy kod zaproszenia</string>
+    <string name="invite_code_generate_dialog_subtitle">Możesz opcjonalnie przypisać kod do konkretnego klienta</string>
+    <string name="invite_code_client_name_label">Imię i nazwisko klienta (opcjonalne)</string>
+    <string name="invite_code_generate_confirm">Wygeneruj</string>
+    <string name="invite_code_cancel">Anuluj kod</string>
+    <string name="invite_code_copied">Skopiowano do schowka</string>
+    <string name="invite_code_expires">Wygasa: %1$s</string>
+    <string name="invite_code_status_pending">Oczekujący</string>
+    <string name="invite_code_status_used">Użyty</string>
+    <string name="invite_code_status_expired">Wygasły</string>
+    <string name="invite_code_status_unknown">Nieznany</string>
+    <string name="copy">Kopiuj</string>
+
+    <!-- Client Detail -->
+    <string name="client_detail_title">Klient</string>
+    <string name="client_detail_goal">Cel</string>
+    <string name="client_detail_status">Status</string>
+    <string name="client_detail_joined">Dołączył</string>
+    <string name="client_detail_plans_coming_soon">Plany treningowe</string>
+    <string name="client_detail_habits_coming_soon">Nawyki</string>
+    <string name="coming_soon">Wkrótce</string>
+
     <!-- Common -->
     <string name="loading">Ładowanie…</string>
     <string name="retry">Spróbuj ponownie</string>

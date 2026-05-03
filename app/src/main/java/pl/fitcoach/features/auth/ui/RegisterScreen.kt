@@ -68,13 +68,17 @@ fun RegisterScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(uiState.registeredRole) {
-        uiState.registeredRole?.let { role ->
-            val route = if (role == UserRole.TRAINER) Screen.TrainerDashboard.route
-            else Screen.ClientDashboard.route
-            navController.navigate(route) {
-                popUpTo(Screen.Login.route) { inclusive = true }
-            }
+    LaunchedEffect(uiState.registeredRole, uiState.inviteCodeWarning) {
+        val role = uiState.registeredRole ?: return@LaunchedEffect
+        // Najpierw pokaż ostrzeżenie o kodzie (jeśli jest), potem nawiguj
+        uiState.inviteCodeWarning?.let { warning ->
+            snackbarHostState.showSnackbar(warning)
+            viewModel.onEvent(RegisterEvent.InviteCodeWarningDismissed)
+        }
+        val route = if (role == UserRole.TRAINER) Screen.TrainerDashboard.route
+        else Screen.ClientDashboard.route
+        navController.navigate(route) {
+            popUpTo(Screen.Login.route) { inclusive = true }
         }
     }
 

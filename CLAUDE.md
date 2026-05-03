@@ -37,13 +37,15 @@ Faza 0 + początek Fazy 1 ukończone. Projekt jest **single-module** (`app/`). P
 |---------|------|------|
 | Auth — login | ✅ | `LoginScreen` + `LoginViewModel` + `LoginUseCase` |
 | Auth — rejestracja | ✅ | `RegisterScreen` + `RegisterViewModel` + `RegisterUseCase`; wybór roli trener/klient; pole invite code (zebrane, logika TODO) |
-| Dashboard trenera | ✅ | Lista klientów z Supabase, statystyka aktywnych, avatar placeholder, logout |
+| Dashboard trenera | ✅ | Lista klientów z Supabase, statystyka aktywnych, avatar placeholder, logout, skrót do kodów zaproszenia |
 | Dashboard klienta | ✅ | Profil klienta, dzisiejszy trening z planu (3 stany: brak planu / dzień wolny / trening), nawyki z checkboxem i polem ilościowym (debounce 600ms), optimistic updates |
 | Splash | ✅ | Sprawdza auth state, przekierowuje do właściwego dashboardu |
+| Kody zaproszenia | ✅ | Trener generuje jednorazowe kody (8-znakowy hex) dla klientów; lista z chipami statusów; kopiowanie do schowka; anulowanie z optimistic update |
+| Rejestracja z invite code | ✅ | Klient wpisuje kod podczas rejestracji; po rejestracji wywoływana Edge Function `redeem-invite-code`; błąd nie blokuje rejestracji — ostrzeżenie w UI |
+| Ekran szczegółów klienta | ✅ | Profil klienta (avatar, cel, status, data dołączenia); placeholdery dla planów i nawyków |
 
 ### Następne do zrobienia (Faza 1)
 
-- Zarządzanie klientami: dodawanie klienta, generowanie invite code, ekran szczegółów
 - Plany treningowe: kreator planu, baza ćwiczeń, przypisanie do klienta
 - Aktywna sesja treningowa (ekran `ActiveWorkout`)
 - Nawyki: ekran zarządzania po stronie trenera
@@ -90,7 +92,7 @@ app/src/main/java/pl/fitcoach/
 ├── FitCoachApp.kt          # Application, Hilt
 ├── MainActivity.kt         # Single activity
 ├── navigation/
-│   ├── NavGraph.kt         # NavHost — aktualnie: Splash, Login, TrainerDashboard, ClientDashboard
+│   ├── NavGraph.kt         # NavHost — Splash, Login, Register, TrainerDashboard, InviteCodes, ClientDetail, ClientDashboard
 │   └── Screen.kt           # Sealed class z routami
 ├── di/AppModule.kt         # Hilt: AppModule (provides) + RepositoryModule (binds) w jednym pliku
 ├── core/
@@ -103,9 +105,12 @@ app/src/main/java/pl/fitcoach/
     │   ├── domain/         # AuthRepository, LoginUseCase, RegisterUseCase, AuthState, UserRole
     │   └── ui/             # LoginScreen, LoginViewModel, RegisterScreen, RegisterViewModel
     ├── splash/             # SplashScreen + SplashViewModel — sprawdza auth, przekierowuje
-    ├── clients/            # Dane klientów (używane przez dashboard trenera)
-    │   ├── data/           # ClientRepositoryImpl, ClientDto, TrainerProfileDto
-    │   └── domain/         # ClientRepository, Client, TrainerProfile, GetClientsUseCase, GetTrainerProfileUseCase
+    ├── clients/            # Zarządzanie klientami (trener)
+    │   ├── data/           # ClientRepositoryImpl, dto/ClientDto, dto/TrainerProfileDto, dto/InviteCodeDto
+    │   ├── domain/         # ClientRepository, model/{Client,TrainerProfile,InviteCode,InviteCodeStatus}
+    │   │                   # usecase/{GetClients,GetClientById,GetTrainerProfile,GenerateInviteCode,
+    │   │                   #          GetInviteCodes,CancelInviteCode,ValidateInviteCode}UseCase
+    │   └── ui/             # InviteCodesScreen+VM, ClientDetailScreen+VM
     ├── dashboard/          # Dashboardy obu ról
     │   ├── data/           # ClientDashboardRepositoryImpl, DTO (plan + nawyki)
     │   ├── domain/         # ClientDashboardRepository, ClientProfile, GetClientDashboardUseCase, LogHabitUseCase
@@ -147,6 +152,18 @@ Rola przechowywana w `user_metadata` Supabase Auth jako `{ "role": "trainer" | "
 - RLS: główna warstwa bezpieczeństwa — trener widzi tylko swoich klientów
 - Pełny schemat DB i polityki RLS: `docs/database-schema.md`
 - Struktura Edge Functions: `docs/architecture.md`
+
+### Edge Functions (supabase/functions/)
+
+| Funkcja | Opis |
+|---------|------|
+| `redeem-invite-code` | POST — realizuje kod zaproszenia po rejestracji klienta; weryfikuje JWT, wywołuje `redeem_invite_code()` przez service role |
+
+### Migracje (supabase/migrations/)
+
+| Plik | Opis |
+|------|------|
+| `20260503100000_invite_codes.sql` | Tabela `invite_codes`, enum `invite_code_status`, RLS, funkcje `generate_invite_code` / `redeem_invite_code` / `expire_old_invite_codes`, widok `public_invite_code_lookup` |
 
 ## Kluczowe decyzje architektoniczne
 

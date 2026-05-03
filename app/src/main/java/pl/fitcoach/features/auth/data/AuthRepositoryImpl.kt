@@ -1,12 +1,16 @@
 package pl.fitcoach.features.auth.data
 
+import android.util.Log
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.providers.builtin.Email
+import io.github.jan.supabase.functions.functions
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.put
 import pl.fitcoach.features.auth.domain.model.AuthState
 import pl.fitcoach.features.auth.domain.model.UserInfo
 import pl.fitcoach.features.auth.domain.model.UserRole
@@ -40,6 +44,16 @@ class AuthRepositoryImpl @Inject constructor(
             }
         }
         getCurrentUser() ?: error("Nie można pobrać danych użytkownika po rejestracji")
+    }
+
+    override suspend fun redeemInviteCode(code: String): Result<Unit> = runCatching {
+        supabaseClient.functions.invoke(
+            function = "redeem-invite-code",
+            body = buildJsonObject { put("code", code)  }
+        )
+        Unit
+    }.onFailure { error ->
+        Log.e("AuthRepositoryImpl", "redeemInviteCode failed for code=$code", error)
     }
 
     override suspend fun logout() {

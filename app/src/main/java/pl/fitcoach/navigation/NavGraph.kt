@@ -6,6 +6,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import pl.fitcoach.features.auth.ui.LoginScreen
 import pl.fitcoach.features.auth.ui.RegisterScreen
+import pl.fitcoach.features.clients.ui.ClientDetailScreen
+import pl.fitcoach.features.clients.ui.InviteCodesScreen
 import pl.fitcoach.features.dashboard.ui.ClientDashboardScreen
 import pl.fitcoach.features.dashboard.ui.TrainerDashboardScreen
 import pl.fitcoach.features.splash.ui.SplashScreen
@@ -30,6 +32,18 @@ fun NavGraph(navController: NavHostController) {
 
         composable(Screen.TrainerDashboard.route) {
             TrainerDashboardScreen(navController = navController)
+        }
+
+        composable(Screen.InviteCodes.route) {
+            InviteCodesScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(Screen.ClientDetail.route) {
+            ClientDetailScreen(
+                onBack = { navController.popBackStack() }
+            )
         }
 
         composable(Screen.ClientDashboard.route) {
