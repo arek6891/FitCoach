@@ -42,11 +42,11 @@ Faza 0 + początek Fazy 1 ukończone. Projekt jest **single-module** (`app/`). P
 | Splash | ✅ | Sprawdza auth state, przekierowuje do właściwego dashboardu |
 | Kody zaproszenia | ✅ | Trener generuje jednorazowe kody (8-znakowy hex) dla klientów; lista z chipami statusów; kopiowanie do schowka; anulowanie z optimistic update |
 | Rejestracja z invite code | ✅ | Klient wpisuje kod podczas rejestracji; po rejestracji wywoływana Edge Function `redeem-invite-code`; błąd nie blokuje rejestracji — ostrzeżenie w UI |
-| Ekran szczegółów klienta | ✅ | Profil klienta (avatar, cel, status, data dołączenia); placeholdery dla planów i nawyków |
+| Ekran szczegółów klienta | ✅ | Profil klienta (avatar, cel, status, data dołączenia); klikalna karta nawiguje do planów |
+| Plany treningowe (trener) | ✅ | Lista planów klienta (`TrainingPlanListScreen`); kreator planu z dniami i ćwiczeniami (`TrainingPlanCreatorScreen`); `ExercisePickerBottomSheet` z wyszukiwarką i filtrami kategorii; sekwencyjny zapis plan→dni→ćwiczenia przez Supabase |
 
 ### Następne do zrobienia (Faza 1)
 
-- Plany treningowe: kreator planu, baza ćwiczeń, przypisanie do klienta
 - Aktywna sesja treningowa (ekran `ActiveWorkout`)
 - Nawyki: ekran zarządzania po stronie trenera
 - Offline sync (WorkManager)
@@ -92,7 +92,7 @@ app/src/main/java/pl/fitcoach/
 ├── FitCoachApp.kt          # Application, Hilt
 ├── MainActivity.kt         # Single activity
 ├── navigation/
-│   ├── NavGraph.kt         # NavHost — Splash, Login, Register, TrainerDashboard, InviteCodes, ClientDetail, ClientDashboard
+│   ├── NavGraph.kt         # NavHost — Splash, Login, Register, TrainerDashboard, InviteCodes, ClientDetail, TrainingPlanList, CreatePlan, ClientDashboard
 │   └── Screen.kt           # Sealed class z routami
 ├── di/AppModule.kt         # Hilt: AppModule (provides) + RepositoryModule (binds) w jednym pliku
 ├── core/
@@ -115,7 +115,12 @@ app/src/main/java/pl/fitcoach/
     │   ├── data/           # ClientDashboardRepositoryImpl, DTO (plan + nawyki)
     │   ├── domain/         # ClientDashboardRepository, ClientProfile, GetClientDashboardUseCase, LogHabitUseCase
     │   └── ui/             # TrainerDashboardScreen+VM, ClientDashboardScreen+VM
-    ├── training/           # Modele domenowe: Exercise, TrainingPlan, TrainingDay, TrainingDayExercise
+    ├── training/           # Plany treningowe (trener)
+    │   ├── data/           # TrainingRepositoryImpl, dto/TrainingDto (ExerciseDto, PlanDto, DayDto, DayExerciseDto + request DTOs)
+    │   ├── domain/         # TrainingRepository, model/{Exercise,TrainingPlan,TrainingDay,TrainingDayExercise}
+    │   │                   # usecase/{GetExercises,GetTrainingPlans,CreateTrainingPlan,CreateTrainingDay,AddExerciseToDay}UseCase
+    │   └── ui/             # TrainingPlanListScreen+VM, TrainingPlanCreatorScreen+VM
+    │       └── components/ # ExercisePickerBottomSheet
     ├── habits/             # Model domenowy: Habit, HabitType
     ├── nutrition/          # (planowane)
     ├── progress/           # (planowane)

@@ -114,6 +114,33 @@
     <string name="invite_code_status_unknown">Nieznany</string>
     <string name="copy">Kopiuj</string>
 
+    <!-- Training Plans -->
+    <string name="training_plans_title">Plany treningowe</string>
+    <string name="training_plan_new">Nowy plan</string>
+    <string name="training_plan_name_label">Nazwa planu</string>
+    <string name="training_plan_description_label">Opis (opcjonalnie)</string>
+    <string name="training_plans_empty">Brak planów treningowych</string>
+    <string name="training_plans_empty_subtitle">Utwórz pierwszy plan dla klienta</string>
+    <string name="training_plan_add_day">Dodaj dzień treningowy</string>
+    <string name="training_plan_day_name_label">Nazwa dnia (np. Dzień A)</string>
+    <string name="training_plan_add_exercise">Dodaj ćwiczenie</string>
+    <string name="training_plan_save">Zapisz plan</string>
+    <string name="training_plan_saving">Zapisywanie…</string>
+    <string name="training_plan_saved">Plan zapisany</string>
+    <string name="training_plan_days_count">%1$d dni</string>
+    <string name="training_plan_active_chip">Aktywny</string>
+    <string name="training_plan_inactive_chip">Nieaktywny</string>
+    <string name="client_detail_plans_title">Plany treningowe</string>
+
+    <!-- Exercise Picker -->
+    <string name="exercise_picker_title">Wybierz ćwiczenie</string>
+    <string name="exercise_picker_search">Szukaj ćwiczenia…</string>
+    <string name="exercise_category_all">Wszystkie</string>
+    <string name="exercise_category_strength">Siła</string>
+    <string name="exercise_category_cardio">Cardio</string>
+    <string name="exercise_category_flexibility">Elastyczność</string>
+    <string name="exercise_category_other">Inne</string>
+
     <!-- Client Detail -->
     <string name="client_detail_title">Klient</string>
     <string name="client_detail_goal">Cel</string>

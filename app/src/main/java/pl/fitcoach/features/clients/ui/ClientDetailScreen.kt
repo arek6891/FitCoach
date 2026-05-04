@@ -17,9 +17,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.FitnessCenter
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -55,13 +58,15 @@ import pl.fitcoach.features.clients.domain.model.Client
 @Composable
 fun ClientDetailScreen(
     onBack: () -> Unit,
+    onNavigateToPlans: (clientProfileId: String) -> Unit,
     viewModel: ClientDetailViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     ClientDetailContent(
         uiState = uiState,
         onEvent = viewModel::onEvent,
-        onBack = onBack
+        onBack = onBack,
+        onNavigateToPlans = onNavigateToPlans
     )
 }
 
@@ -70,7 +75,8 @@ fun ClientDetailScreen(
 private fun ClientDetailContent(
     uiState: ClientDetailUiState,
     onEvent: (ClientDetailEvent) -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onNavigateToPlans: (clientProfileId: String) -> Unit = { _ -> }
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -129,6 +135,7 @@ private fun ClientDetailContent(
                 uiState.client != null -> {
                     ClientDetailBody(
                         client = uiState.client,
+                        onNavigateToPlans = { onNavigateToPlans(uiState.client.id) },
                         modifier = Modifier.fillMaxSize()
                     )
                 }
@@ -140,6 +147,7 @@ private fun ClientDetailContent(
 @Composable
 private fun ClientDetailBody(
     client: Client,
+    onNavigateToPlans: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -186,8 +194,35 @@ private fun ClientDetailBody(
 
         Spacer(modifier = Modifier.height(4.dp))
 
-        // Placeholder: Plany treningowe
-        ComingSoonCard(title = stringResource(R.string.client_detail_plans_coming_soon))
+        // Plany treningowe — nawigacja do listy
+        ElevatedCard(
+            onClick = onNavigateToPlans,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Default.FitnessCenter,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    text = stringResource(R.string.client_detail_plans_title),
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
 
         // Placeholder: Nawyki
         ComingSoonCard(title = stringResource(R.string.client_detail_habits_coming_soon))

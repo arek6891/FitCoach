@@ -1,4 +1,4 @@
-package pl.fitcoach.features.clients.ui
+package pl.fitcoach.features.training.ui
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -9,57 +9,54 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import pl.fitcoach.features.clients.domain.model.Client
-import pl.fitcoach.features.clients.domain.usecase.GetClientByIdUseCase
+import pl.fitcoach.features.training.domain.model.TrainingPlan
+import pl.fitcoach.features.training.domain.usecase.GetTrainingPlansUseCase
 import javax.inject.Inject
 
-data class ClientDetailUiState(
-    val client: Client? = null,
+data class TrainingPlanListUiState(
+    val plans: List<TrainingPlan> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null
 )
 
-sealed class ClientDetailEvent {
-    data object Retry : ClientDetailEvent()
-    data object ErrorDismissed : ClientDetailEvent()
+sealed class TrainingPlanListEvent {
+    data object Refresh : TrainingPlanListEvent()
+    data object ErrorDismissed : TrainingPlanListEvent()
 }
 
 @HiltViewModel
-class ClientDetailViewModel @Inject constructor(
+class TrainingPlanListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val getClientByIdUseCase: GetClientByIdUseCase
+    private val getTrainingPlansUseCase: GetTrainingPlansUseCase
 ) : ViewModel() {
 
     val clientId: String = checkNotNull(savedStateHandle["clientId"])
 
-    private val _uiState = MutableStateFlow(ClientDetailUiState())
-    val uiState: StateFlow<ClientDetailUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(TrainingPlanListUiState())
+    val uiState: StateFlow<TrainingPlanListUiState> = _uiState.asStateFlow()
 
     init {
-        loadClient()
+        loadPlans()
     }
 
-    fun onEvent(event: ClientDetailEvent) {
+    fun onEvent(event: TrainingPlanListEvent) {
         when (event) {
-            is ClientDetailEvent.Retry -> loadClient()
-            is ClientDetailEvent.ErrorDismissed ->
+            is TrainingPlanListEvent.Refresh -> loadPlans()
+            is TrainingPlanListEvent.ErrorDismissed ->
                 _uiState.update { it.copy(error = null) }
         }
     }
 
-    private fun loadClient() {
+    private fun loadPlans() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
-            getClientByIdUseCase(clientId)
-                .onSuccess { client ->
-                    _uiState.update { it.copy(isLoading = false, client = client) }
+            getTrainingPlansUseCase(clientId)
+                .onSuccess { plans ->
+                    _uiState.update { it.copy(isLoading = false, plans = plans) }
                 }
                 .onFailure { error ->
                     _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            error = mapError(error)
-                        )
+                        it.copy(isLoading = false, error = mapError(error))
                     }
                 }
         }

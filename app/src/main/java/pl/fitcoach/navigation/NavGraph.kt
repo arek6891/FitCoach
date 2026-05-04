@@ -2,8 +2,10 @@ package pl.fitcoach.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import pl.fitcoach.features.auth.ui.LoginScreen
 import pl.fitcoach.features.auth.ui.RegisterScreen
 import pl.fitcoach.features.clients.ui.ClientDetailScreen
@@ -11,6 +13,8 @@ import pl.fitcoach.features.clients.ui.InviteCodesScreen
 import pl.fitcoach.features.dashboard.ui.ClientDashboardScreen
 import pl.fitcoach.features.dashboard.ui.TrainerDashboardScreen
 import pl.fitcoach.features.splash.ui.SplashScreen
+import pl.fitcoach.features.training.ui.TrainingPlanCreatorScreen
+import pl.fitcoach.features.training.ui.TrainingPlanListScreen
 
 @Composable
 fun NavGraph(navController: NavHostController) {
@@ -40,9 +44,37 @@ fun NavGraph(navController: NavHostController) {
             )
         }
 
-        composable(Screen.ClientDetail.route) {
+        composable(
+            route = Screen.ClientDetail.route,
+            arguments = listOf(navArgument("clientId") { type = NavType.StringType })
+        ) {
             ClientDetailScreen(
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                onNavigateToPlans = { profileId ->
+                    navController.navigate(Screen.TrainingPlanList.createRoute(profileId))
+                }
+            )
+        }
+
+        composable(
+            route = Screen.TrainingPlanList.route,
+            arguments = listOf(navArgument("clientId") { type = NavType.StringType })
+        ) {
+            TrainingPlanListScreen(
+                onBack = { navController.popBackStack() },
+                onCreatePlan = { clientId ->
+                    navController.navigate(Screen.CreatePlan.createRoute(clientId))
+                }
+            )
+        }
+
+        composable(
+            route = Screen.CreatePlan.route,
+            arguments = listOf(navArgument("clientId") { type = NavType.StringType })
+        ) {
+            TrainingPlanCreatorScreen(
+                onBack = { navController.popBackStack() },
+                onPlanSaved = { navController.popBackStack() }
             )
         }
 

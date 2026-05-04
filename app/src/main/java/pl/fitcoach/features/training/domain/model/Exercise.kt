@@ -4,7 +4,9 @@ data class Exercise(
     val id: String,
     val name: String,
     val category: String,
-    val muscleGroups: List<String>
+    val muscleGroups: List<String>,
+    val description: String? = null,
+    val isCustom: Boolean = false
 )
 
 data class TrainingDayExercise(
