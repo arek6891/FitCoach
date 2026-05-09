@@ -1,6 +1,6 @@
 package pl.fitcoach.features.clients.domain.model
 
-import kotlinx.datetime.Instant
+import java.time.Instant
 
 data class InviteCode(
     val id: String,

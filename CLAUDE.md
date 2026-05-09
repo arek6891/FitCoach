@@ -10,16 +10,17 @@ Trener zarządza klientami, planami i nawykami. Klient loguje treningi, jedzenie
 ## Stos technologiczny
 
 ### Android
-- **Kotlin 2.x** + Jetpack Compose (Material3)
+- **Kotlin 2.0.21** + Jetpack Compose (Compose BOM 2024.12.01, Material3)
 - **Architektura:** Clean Architecture + MVVM
-- **DI:** Hilt (z KSP — nie KAPT)
-- **Nawigacja:** Compose Navigation 2.x
-- **Sieć:** Supabase Kotlin SDK (`supabase-kt 3.x`) + Retrofit (Open Food Facts)
-- **Cache:** Room (offline-first dla treningów)
-- **Obrazy:** Coil 2.x
-- **Skanowanie:** ML Kit Barcode Scanner
+- **DI:** Hilt 2.52 (z KSP — nie KAPT)
+- **Nawigacja:** Compose Navigation 2.8.5
+- **Sieć:** Supabase Kotlin SDK 3.0.2 (Ktor 3.0.3) + Retrofit 2.11.0 (Open Food Facts)
+- **Cache:** Room 2.6.1 (offline-first dla treningów)
+- **Obrazy:** Coil 2.7.0
+- **Skanowanie:** ML Kit Barcode Scanner 17.3.0
 - **Push:** Firebase Cloud Messaging
-- **Płatności:** Stripe Android SDK (BLIK przez Stripe)
+- **Płatności:** Stripe Android SDK 21.0.0 (BLIK przez Stripe)
+- compileSdk 35, minSdk 26, Java 17, AGP 8.7.0
 
 ### Backend
 - **Supabase** — PostgreSQL + Auth + Realtime + Storage + Edge Functions
@@ -30,6 +31,8 @@ Trener zarządza klientami, planami i nawykami. Klient loguje treningi, jedzenie
 ## Stan projektu
 
 Faza 0 + początek Fazy 1 ukończone. Projekt jest **single-module** (`app/`). Podział na `core-data/core-domain/feature-*` to plan na przyszłość, nie aktualny stan.
+
+**Testy:** katalogi `app/src/test/` i `app/src/androidTest/` są puste — nie ma jeszcze żadnych testów.
 
 ### Zaimplementowane features
 
@@ -47,8 +50,8 @@ Faza 0 + początek Fazy 1 ukończone. Projekt jest **single-module** (`app/`). P
 
 ### Następne do zrobienia (Faza 1)
 
-- Aktywna sesja treningowa (ekran `ActiveWorkout`)
-- Nawyki: ekran zarządzania po stronie trenera
+- Aktywna sesja treningowa (ekran `ActiveWorkout`) — route zdefiniowany w `Screen.kt`, brak composable w `NavGraph.kt`
+- Nawyki: ekran zarządzania po stronie trenera — `features/habits/` ma tylko model domenowy (`Habit.kt`), brak data/ui
 - Offline sync (WorkManager)
 
 ## Komendy
@@ -89,11 +92,11 @@ Plik `google-services.json` w `app/` (nie commitować).
 
 ```
 app/src/main/java/pl/fitcoach/
-├── FitCoachApp.kt          # Application, Hilt
-├── MainActivity.kt         # Single activity
+├── FitCoachApp.kt          # Application, Hilt; inicjalizuje PaymentConfiguration (Stripe)
+├── MainActivity.kt         # Single activity; enableEdgeToEdge + NavGraph
 ├── navigation/
-│   ├── NavGraph.kt         # NavHost — Splash, Login, Register, TrainerDashboard, InviteCodes, ClientDetail, TrainingPlanList, CreatePlan, ClientDashboard
-│   └── Screen.kt           # Sealed class z routami
+│   ├── NavGraph.kt         # NavHost — 8 zarejestrowanych routów (patrz niżej)
+│   └── Screen.kt           # Sealed class z 14 routami (część niezarejestrowana w NavGraph)
 ├── di/AppModule.kt         # Hilt: AppModule (provides) + RepositoryModule (binds) w jednym pliku
 ├── core/
 │   ├── data/db/            # FitCoachDatabase (Room), aktualnie tylko UserCacheDao
@@ -106,13 +109,13 @@ app/src/main/java/pl/fitcoach/
     │   └── ui/             # LoginScreen, LoginViewModel, RegisterScreen, RegisterViewModel
     ├── splash/             # SplashScreen + SplashViewModel — sprawdza auth, przekierowuje
     ├── clients/            # Zarządzanie klientami (trener)
-    │   ├── data/           # ClientRepositoryImpl, dto/ClientDto, dto/TrainerProfileDto, dto/InviteCodeDto
+    │   ├── data/           # ClientRepositoryImpl, dto/ClientDto, dto/InviteCodeDto
     │   ├── domain/         # ClientRepository, model/{Client,TrainerProfile,InviteCode,InviteCodeStatus}
     │   │                   # usecase/{GetClients,GetClientById,GetTrainerProfile,GenerateInviteCode,
     │   │                   #          GetInviteCodes,CancelInviteCode,ValidateInviteCode}UseCase
     │   └── ui/             # InviteCodesScreen+VM, ClientDetailScreen+VM
     ├── dashboard/          # Dashboardy obu ról
-    │   ├── data/           # ClientDashboardRepositoryImpl, DTO (plan + nawyki)
+    │   ├── data/           # ClientDashboardRepositoryImpl, dto/ClientDashboardDto
     │   ├── domain/         # ClientDashboardRepository, ClientProfile, GetClientDashboardUseCase, LogHabitUseCase
     │   └── ui/             # TrainerDashboardScreen+VM, ClientDashboardScreen+VM
     ├── training/           # Plany treningowe (trener)
@@ -121,12 +124,19 @@ app/src/main/java/pl/fitcoach/
     │   │                   # usecase/{GetExercises,GetTrainingPlans,CreateTrainingPlan,CreateTrainingDay,AddExerciseToDay}UseCase
     │   └── ui/             # TrainingPlanListScreen+VM, TrainingPlanCreatorScreen+VM
     │       └── components/ # ExercisePickerBottomSheet
-    ├── habits/             # Model domenowy: Habit, HabitType
+    ├── habits/             # Tylko model domenowy: Habit, HabitType (brak data/ui)
     ├── nutrition/          # (planowane)
     ├── progress/           # (planowane)
     ├── messages/           # (planowane)
     └── settings/           # (planowane)
 ```
+
+### NavGraph vs Screen.kt
+
+`Screen.kt` definiuje 14 routów. W `NavGraph.kt` zarejestrowanych jest 8:
+`Splash`, `Login`, `Register`, `TrainerDashboard`, `InviteCodes`, `ClientDetail`, `TrainingPlanList`, `CreatePlan`, `ClientDashboard`.
+
+Niezarejestrowane (do implementacji): `ActiveWorkout`, `FoodLog`, `Progress`, `Habits`, `Settings`, `Subscription`.
 
 ## Konwencje kodu
 
@@ -158,6 +168,10 @@ Rola przechowywana w `user_metadata` Supabase Auth jako `{ "role": "trainer" | "
 - Pełny schemat DB i polityki RLS: `docs/database-schema.md`
 - Struktura Edge Functions: `docs/architecture.md`
 
+Zainstalowane moduły Supabase SDK w `AppModule.kt`: `Auth`, `Postgrest`, `Realtime`, `Storage`, `Functions`.
+
+OkHttpClient (dla Open Food Facts) loguje BODY w debug, NONE w release.
+
 ### Edge Functions (supabase/functions/)
 
 | Funkcja | Opis |
@@ -168,6 +182,7 @@ Rola przechowywana w `user_metadata` Supabase Auth jako `{ "role": "trainer" | "
 
 | Plik | Opis |
 |------|------|
+| `20260101000000_initial_schema.sql` | Schemat bazowy: 11 tabel (trainer/client profiles, exercises, training plans/days/exercises, workout sessions/sets, habits, habit_logs, subscriptions), helper functions (`get_trainer_id`, `get_client_id`, `update_updated_at`), RLS policies, triggery, seed 16 predefiniowanych ćwiczeń; rozszerzenie `pg_trgm` |
 | `20260503100000_invite_codes.sql` | Tabela `invite_codes`, enum `invite_code_status`, RLS, funkcje `generate_invite_code` / `redeem_invite_code` / `expire_old_invite_codes`, widok `public_invite_code_lookup` |
 
 ## Kluczowe decyzje architektoniczne

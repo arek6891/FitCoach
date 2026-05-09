@@ -118,7 +118,9 @@ class ClientDashboardRepositoryImpl @Inject constructor(
         )
 
         supabaseClient.postgrest["habit_logs"]
-            .upsert(logDto, onConflict = "habit_id,date")
+            .upsert(logDto) {
+                onConflict = "habit_id,date"
+            }
     }
 
     // --- Helpers ---

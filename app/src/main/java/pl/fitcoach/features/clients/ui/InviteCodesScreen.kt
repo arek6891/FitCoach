@@ -57,7 +57,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kotlinx.datetime.Instant
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import pl.fitcoach.R
 import pl.fitcoach.core.ui.theme.FitCoachTheme
 import pl.fitcoach.features.clients.domain.model.InviteCode
@@ -87,6 +89,7 @@ private fun InviteCodesContent(
     val clipboardManager = LocalClipboardManager.current
 
     val copiedMessage = stringResource(R.string.invite_code_copied)
+    val copyLabel = stringResource(R.string.copy)
 
     LaunchedEffect(uiState.error) {
         uiState.error?.let { message ->
@@ -99,7 +102,7 @@ private fun InviteCodesContent(
         val code = uiState.generatedCode ?: return@LaunchedEffect
         val result = snackbarHostState.showSnackbar(
             message = code,
-            actionLabel = stringResource(R.string.copy),
+            actionLabel = copyLabel,
             duration = SnackbarDuration.Long
         )
         if (result == SnackbarResult.ActionPerformed) {
@@ -398,11 +401,8 @@ private fun EmptyInviteCodesState(modifier: Modifier = Modifier) {
 }
 
 private fun formatInstantDate(instant: Instant): String {
-    val localDate = instant.toLocalDateTime(kotlinx.datetime.TimeZone.currentSystemDefault()).date
-    val day = localDate.dayOfMonth.toString().padStart(2, '0')
-    val month = localDate.monthNumber.toString().padStart(2, '0')
-    val year = localDate.year
-    return "$day.$month.$year"
+    val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy").withZone(ZoneId.systemDefault())
+    return formatter.format(instant)
 }
 
 // --- Previews ---

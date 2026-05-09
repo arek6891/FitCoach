@@ -15,6 +15,7 @@ import pl.fitcoach.features.dashboard.ui.TrainerDashboardScreen
 import pl.fitcoach.features.splash.ui.SplashScreen
 import pl.fitcoach.features.training.ui.TrainingPlanCreatorScreen
 import pl.fitcoach.features.training.ui.TrainingPlanListScreen
+import pl.fitcoach.features.workout.ui.ActiveWorkoutScreen
 
 @Composable
 fun NavGraph(navController: NavHostController) {
@@ -80,6 +81,16 @@ fun NavGraph(navController: NavHostController) {
 
         composable(Screen.ClientDashboard.route) {
             ClientDashboardScreen(navController = navController)
+        }
+
+        composable(
+            route = Screen.ActiveWorkout.route,
+            arguments = listOf(
+                navArgument("planId") { type = NavType.StringType },
+                navArgument("dayId") { type = NavType.StringType }
+            )
+        ) {
+            ActiveWorkoutScreen(navController = navController)
         }
     }
 }

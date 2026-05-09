@@ -88,7 +88,10 @@ fun ClientDashboardScreen(
 
     ClientDashboardContent(
         uiState = uiState,
-        onEvent = viewModel::onEvent
+        onEvent = viewModel::onEvent,
+        onStartWorkout = { planId, dayId ->
+            navController.navigate(Screen.ActiveWorkout.createRoute(planId, dayId))
+        }
     )
 }
 
@@ -96,7 +99,8 @@ fun ClientDashboardScreen(
 @Composable
 private fun ClientDashboardContent(
     uiState: ClientDashboardUiState,
-    onEvent: (ClientDashboardEvent) -> Unit
+    onEvent: (ClientDashboardEvent) -> Unit,
+    onStartWorkout: (planId: String, dayId: String) -> Unit = { _, _ -> }
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -142,7 +146,11 @@ private fun ClientDashboardContent(
             if (uiState.isLoading) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             } else {
-                ClientDashboardBody(uiState = uiState, onEvent = onEvent)
+                ClientDashboardBody(
+                    uiState = uiState,
+                    onEvent = onEvent,
+                    onStartWorkout = onStartWorkout
+                )
             }
         }
     }
@@ -151,7 +159,8 @@ private fun ClientDashboardContent(
 @Composable
 private fun ClientDashboardBody(
     uiState: ClientDashboardUiState,
-    onEvent: (ClientDashboardEvent) -> Unit
+    onEvent: (ClientDashboardEvent) -> Unit,
+    onStartWorkout: (planId: String, dayId: String) -> Unit = { _, _ -> }
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -174,7 +183,13 @@ private fun ClientDashboardBody(
             TodayTrainingCard(
                 plan = uiState.activePlan,
                 todayDay = uiState.todayTrainingDay,
-                onStartWorkout = { /* TODO: nawigacja do ActiveWorkout */ },
+                onStartWorkout = {
+                    val planId = uiState.activePlan?.id
+                    val dayId = uiState.todayTrainingDay?.id
+                    if (planId != null && dayId != null) {
+                        onStartWorkout(planId, dayId)
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)

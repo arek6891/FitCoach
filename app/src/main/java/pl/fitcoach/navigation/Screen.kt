@@ -20,8 +20,8 @@ sealed class Screen(val route: String) {
 
     // Client
     data object ClientDashboard : Screen("client/dashboard")
-    data object ActiveWorkout : Screen("client/workout/{sessionId}") {
-        fun createRoute(sessionId: String) = "client/workout/$sessionId"
+    data object ActiveWorkout : Screen("client/workout/{planId}/{dayId}") {
+        fun createRoute(planId: String, dayId: String) = "client/workout/$planId/$dayId"
     }
     data object FoodLog : Screen("client/food")
     data object Progress : Screen("client/progress")

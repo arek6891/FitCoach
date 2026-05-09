@@ -63,6 +63,21 @@
     <string name="weight_kg">Kg</string>
     <string name="save_set">Zapisz serię</string>
 
+    <!-- Active Workout -->
+    <string name="active_workout_title">Trening</string>
+    <string name="active_workout_finish">Zakończ trening</string>
+    <string name="active_workout_finish_confirm">Zapisz i zakończ</string>
+    <string name="active_workout_notes_hint">Notatki do treningu (opcjonalnie)</string>
+    <string name="active_workout_rest_timer">Odpoczynek</string>
+    <string name="active_workout_skip_rest">Pomiń</string>
+    <string name="active_workout_set_completed">Seria ukończona</string>
+    <string name="set_number">Seria %1$d</string>
+    <string name="reps_label">Powt.</string>
+    <string name="weight_label">Kg</string>
+    <string name="active_workout_saving">Zapisywanie…</string>
+    <string name="active_workout_back_confirm_title">Opuścić trening?</string>
+    <string name="active_workout_back_confirm_body">Sesja zostanie przerwana i niezapisana.</string>
+
     <!-- Habits -->
     <string name="habits_title">Nawyki</string>
     <string name="habit_completed">Wykonane</string>

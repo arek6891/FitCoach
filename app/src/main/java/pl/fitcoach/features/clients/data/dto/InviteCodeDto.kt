@@ -1,6 +1,6 @@
 package pl.fitcoach.features.clients.data.dto
 
-import kotlinx.datetime.Instant
+import java.time.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import pl.fitcoach.features.clients.domain.model.InviteCode
